@@ -1,0 +1,45 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+logging:
+  level:
+    root: WARN
+    com.codezerotoone: INFO
+    org.hibernate.SQL: ERROR
+
+h2:
+  console:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+  info:
+    env:
+      enabled: false
+    build:
+      enabled: true
+    git:
+      enabled: false
+
+info:
+  app:
+    environment: 운영환경
+
+oauth2:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}

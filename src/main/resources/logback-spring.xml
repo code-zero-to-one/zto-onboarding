@@ -1,0 +1,26 @@
+<configuration>
+    <!-- 기본 콘솔 Appender: 전체 로그에 적용 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 기본 포맷: 타임스탬프, 스레드, 로그 레벨, 로거 이름, 메시지 출력 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 특정 패키지용 별도 Appender: 메시지만 출력 -->
+    <appender name="CONFIG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 전체 로거 설정 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- ConfigChecker 클래스가 속한 패키지에 대해 별도 Appender 적용 -->
+    <logger name="com.codezerotoone.mvp.config" level="INFO" additivity="false">
+        <appender-ref ref="CONFIG_CONSOLE" />
+    </logger>
+</configuration>

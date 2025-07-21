@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: mvp
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DB_URL:jdbc:mariadb://localhost:3306/zto_local_core?createDatabaseIfNotExist=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  # Whitelabel page disabled
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+
+  batch:
+    jdbc:
+      initialize-schema: never
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql # TODO : 잘 작동하지만, 좀 더 일반적인 방식 고민 필요
+      continue-on-error: true      #중복 CREATE 오류 무시ㄴ
+
+info:
+  app:
+    name: 로컬개발환경
+    description: 스터디 플랫폼
+
+# Custom configuration - 추후 분리 가능성
+client:
+  origin: ${CLIENT_ORIGIN:http://localhost:3000}
+  domain: ${CLIENT_DOMAIN:localhost}
+  cors:
+    allowed-origins: ${ACCESS_CONTROL_ALLOWED_ORIGINS:http://localhost:3000}
+
+server:
+  origin: ${SERVER_ORIGIN:http://localhost:8080}
+  error:
+    # 오류 응답에 exception의 내용을 포함할지 여부
+    include-exception: true
+
+    # 오류 응답에 stacktrace 내용을 포함할지 여부 (ALWAYS, NEVER, ON_TRACE_PARAM)
+    include-stacktrace: ALWAYS
+
+    whitelabel:
+      enabled: false
+
+
+resources:
+  static-resource-path: ${STATIC_RESOURCE_PATH:none}
+
+# Logging Levels
+logging:
+  level:
+    org.springframework.security: error

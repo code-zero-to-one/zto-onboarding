@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: mvp
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  h2:
+    console:
+      enabled: true # H2 콘솔 활성화 (디버깅용)
+      path: /h2-console
+
+  # JPA 설정 추가
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 테스트 실행 시 스키마 생성 및 종료 시 삭제
+    properties:
+      hibernate:
+        format_sql: true # SQL 쿼리 포맷팅
+        show_sql: true   # 실행되는 SQL 쿼리 로깅
+
+    # DB 초기화 순서 조정: DDL 생성 후 data.sql 실행
+    defer-datasource-initialization: true
+
+  # 배치 설정 추가
+  batch:
+    jdbc:
+      initialize-schema: always # 테스트 시 배치 메타데이터 테이블 자동 생성
+    job:
+      enabled: false # 테스트 시 배치 잡 자동 실행 비활성화
+
+matching:
+  template:
+    default-id: 1
+  algorithm:
+    kmeans:
+      k: 5
+    nearest-neighbors: 3
+  admin-member-id: 2
+  scheduler:
+    cron: "*/5 * * * * *" # 매 5초마다 실행으로 변경
+
+# --- 로깅 설정 추가 ---
+logging:
+  level:
+    # 기본 로깅 레벨
+    root: INFO
+    
+info:
+  app:
+    name: ${spring.application.name}
+    description: 스터디 플랫폼

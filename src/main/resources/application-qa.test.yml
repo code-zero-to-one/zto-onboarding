@@ -1,0 +1,47 @@
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+logging:
+  level:
+    root: ERROR
+    com.codezerotoone: TRACE
+    org.hibernate.SQL: INFO
+
+h2:
+  console:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans
+  endpoint:
+    health:
+      show-details: always
+    beans:
+      access: read_only
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
+    git:
+      enabled: true
+
+info:
+  app:
+    environment: QA환경
+
+oauth2:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET:empty} # QA 서버의 경우 CLIENT_SECRET이 없음

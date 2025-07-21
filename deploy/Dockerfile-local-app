@@ -1,0 +1,7 @@
+FROM amazoncorretto:21
+RUN ["mkdir", "-p", "/app/app-resource/profile-image"]
+WORKDIR /app
+COPY ../ ./
+RUN ["./gradlew", "clean", "build", "-x", "test"]
+ENTRYPOINT ["java", "-jar", "/app/build/libs/mvp-0.0.1-SNAPSHOT.jar"]
+# ENTRYPOINT ["./gradlew", "bootRun", "-x", "test"]

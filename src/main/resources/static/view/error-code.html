@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Error Code Specification</title>
+
+    <script type="text/javascript">
+        $(document).ready(() => {
+            $.ajax({
+                url: '/error-code',
+                method: 'GET',
+                success: (data) => {
+                    const errorCodeNames = Object.keys(data);
+
+                    const base = $('#base');
+                    for (const errorCodeName of errorCodeNames) {
+                        const errorCodeList = data[errorCodeName];
+                        let tableContent = '';
+                        for (const item of errorCodeList) {
+                            tableContent += `
+                                <tr>
+                                    <td>
+                                    ${item.errorResponse?.errorCode}
+                                    </td>
+                                    <td>
+                                        ${item.errorResponse?.errorName}
+                                    </td>
+                                    <td>
+                                        ${item.errorResponse?.statusCode}
+                                    </td>
+                                    <td>
+                                        ${item.errorResponse?.message}
+                                    </td>
+                                    <td>
+                                        ${item.description}
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        base.append(`
+                            <h2>${errorCodeName}</h2>
+                            <table border="1">
+                                <thead>
+                                    <th>
+                                        Error Code
+                                    </th>
+                                    <th>
+                                        Error Name
+                                    </th>
+                                    <th>
+                                        Status Code
+                                    </th>
+                                    <th>
+                                        Message
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                </thead>
+                                <tbody>
+                                    ${tableContent}
+                                </tbody>
+                            </table>
+                        `);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="base">
+<a href="/error-code/download-markdown">다운로드 마크다운</a>
+</div>
+</body>
+</html>
