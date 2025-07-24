@@ -105,4 +105,8 @@ public class Member extends BaseEntity {
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
+
+    public void updateStatus(MemberStatus newStatus) {
+        this.memberStatus = newStatus;
+    }
 }

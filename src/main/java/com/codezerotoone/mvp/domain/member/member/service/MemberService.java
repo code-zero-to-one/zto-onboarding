@@ -1,5 +1,6 @@
 package com.codezerotoone.mvp.domain.member.member.service;
 
+import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
 import com.codezerotoone.mvp.domain.member.member.dto.request.MemberCreationRequestDto;
 import com.codezerotoone.mvp.domain.member.member.exception.MemberNotFoundException;
@@ -15,4 +16,6 @@ public interface MemberService {
      * @throws MemberNotFoundException 해당 회원이 없을 경우.
      */
     void deleteMember(Long memberId) throws MemberNotFoundException;
+
+    void updateStatus(Long memberId, MemberStatus status);
 }

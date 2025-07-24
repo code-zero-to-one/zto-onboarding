@@ -1,5 +1,6 @@
 package com.codezerotoone.mvp.domain.member.member.controller;
 
+import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.controller.apidocs.MemberDeletionApiDocs;
 import com.codezerotoone.mvp.domain.member.member.controller.apidocs.SignUpApiDocs;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
@@ -45,5 +46,12 @@ public class MemberController {
     public ResponseEntity<BaseResponse<Void>> deleteMember(@PathVariable("memberId") Long memberId) {
         memberService.deleteMember(memberId);
         return ResponseEntity.ok(BaseResponse.of(HttpStatus.OK));
+    }
+
+    @PatchMapping("/{memberId}/status")
+    public ResponseEntity<BaseResponse<Void>> updateMemberStatus(@PathVariable Long memberId, @RequestParam("status")
+                                                                 MemberStatus status) {
+        memberService.updateStatus(memberId, status);
+        return ResponseEntity.ok().build();
     }
 }

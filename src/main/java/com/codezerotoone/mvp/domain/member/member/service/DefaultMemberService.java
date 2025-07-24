@@ -1,6 +1,7 @@
 package com.codezerotoone.mvp.domain.member.member.service;
 
 import com.codezerotoone.mvp.domain.image.constant.ImageExtension;
+import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
 import com.codezerotoone.mvp.domain.member.member.dto.request.MemberCreationRequestDto;
 import com.codezerotoone.mvp.domain.member.member.entity.Member;
@@ -56,5 +57,13 @@ public class DefaultMemberService implements MemberService {
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         member.deleteUser();
+    }
+
+    @Override
+    public void updateStatus(Long memberId, MemberStatus status) {
+        Member member = memberRepository.findNotDeletedMemberById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        member.updateStatus(status);
     }
 }
