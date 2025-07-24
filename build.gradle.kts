@@ -55,6 +55,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf") //타임리프
 
 	// Spring Data Redis 추가
 	// implementation("org.springframework.boot:spring-boot-starter-data-redis")
