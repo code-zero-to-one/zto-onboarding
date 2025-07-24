@@ -1,5 +1,6 @@
 package com.codezerotoone.mvp.global.config.security;
 
+import com.codezerotoone.mvp.domain.member.auth.service.CustomOAuth2UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
