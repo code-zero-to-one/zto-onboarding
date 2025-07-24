@@ -5,6 +5,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
+  jwt:
+    secret: vjldksjfoiejfoaiejflskfjlsdkfjsoeifjdfkdfjlekdfjdkfjei
 
 logging:
   level:
@@ -45,3 +47,4 @@ oauth2:
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
     client-secret: ${KAKAO_CLIENT_SECRET:empty} # QA 서버의 경우 CLIENT_SECRET이 없음
+

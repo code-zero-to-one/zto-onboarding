@@ -52,6 +52,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
 	// TODO: Spring Security OAuth2 Resource Server 사용에 대해 검토해야 함
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client") // OAuth2 starter
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
 	// Spring Data Redis 추가
 	// implementation("org.springframework.boot:spring-boot-starter-data-redis")
