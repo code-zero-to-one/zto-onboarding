@@ -1,15 +1,23 @@
 package com.codezerotoone.mvp.domain.member.member.service;
 
 import com.codezerotoone.mvp.domain.image.constant.ImageExtension;
+import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
+import com.codezerotoone.mvp.domain.member.member.dto.MemberListDto;
 import com.codezerotoone.mvp.domain.member.member.dto.request.MemberCreationRequestDto;
 import com.codezerotoone.mvp.domain.member.member.entity.Member;
 import com.codezerotoone.mvp.domain.member.member.exception.DuplicateMemberException;
 import com.codezerotoone.mvp.domain.member.member.exception.MemberNotFoundException;
 import com.codezerotoone.mvp.domain.member.member.repository.MemberRepository;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberInfo;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberProfile;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberProfileData;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.StudySubject;
 import com.codezerotoone.mvp.global.file.url.FileUrlResolver;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +60,40 @@ public class DefaultMemberService implements MemberService {
 
     @Override
     public void deleteMember(Long memberId) throws MemberNotFoundException {
-        throw new UnsupportedOperationException();
+        Member member = memberRepository.findNotDeletedMemberById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        member.deleteUser();
+    }
+
+    @Override
+    public void updateStatus(Long memberId, MemberStatus status) {
+        Member member = memberRepository.findNotDeletedMemberById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        member.updateStatus(status);
+    }
+
+    @Override
+    public Page<MemberListDto> listMember(Pageable pageable) {
+        return memberRepository.findAllByDeletedAtIsNull(pageable)
+                .map(this::memberToListDto);
+    }
+
+    private MemberListDto memberToListDto(Member m) {
+        MemberProfile memberProfile = m.getMemberProfile();
+        MemberProfileData memberProfileData = memberProfile.getMemberProfileData();
+        MemberInfo memberInfo = memberProfile.getMemberInfo();
+
+        StudySubject preferredStudySubject = memberInfo.getPreferredStudySubject();
+
+        return new MemberListDto(
+                m.getMemberId(),
+                memberProfile.getMemberName(),
+                m.getCreatedAt(),
+                memberProfileData.getTel(),
+                memberProfileData.getBirthDate().toString(),
+                preferredStudySubject.getStudySubjectName()
+        );
     }
 }

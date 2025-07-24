@@ -1,8 +1,12 @@
 package com.codezerotoone.mvp.domain.member.member.controller;
 
+import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.controller.apidocs.MemberDeletionApiDocs;
+import com.codezerotoone.mvp.domain.member.member.controller.apidocs.MemberListApiDocs;
 import com.codezerotoone.mvp.domain.member.member.controller.apidocs.SignUpApiDocs;
+import com.codezerotoone.mvp.domain.member.member.controller.apidocs.UpdateMemberStatusApiDocs;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
+import com.codezerotoone.mvp.domain.member.member.dto.MemberListDto;
 import com.codezerotoone.mvp.domain.member.member.dto.request.MemberCreationRequestDto;
 import com.codezerotoone.mvp.domain.member.member.service.MemberService;
 import com.codezerotoone.mvp.global.api.format.BaseResponse;
@@ -10,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +49,23 @@ public class MemberController {
     @DeleteMapping("/{memberId}")
     @MemberDeletionApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteMember(@PathVariable("memberId") Long memberId) {
-        this.memberService.deleteMember(memberId);
+        memberService.deleteMember(memberId);
         return ResponseEntity.ok(BaseResponse.of(HttpStatus.OK));
+    }
+
+    @PatchMapping("/{memberId}/status")
+    @UpdateMemberStatusApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateMemberStatus(@PathVariable Long memberId, @RequestParam("status")
+                                                                 MemberStatus status) {
+        memberService.updateStatus(memberId, status);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    @MemberListApiDocs
+    public ResponseEntity<BaseResponse<Page<MemberListDto>>> listMembers(Pageable pageable) {
+        Page<MemberListDto> page = memberService.listMember(pageable);
+
+        return ResponseEntity.ok(BaseResponse.of(page, HttpStatus.OK));
     }
 }

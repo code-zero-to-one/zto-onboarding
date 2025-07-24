@@ -95,11 +95,18 @@ public class Member extends BaseEntity {
         return new Member(memberId);
     }
 
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
+    public void deleteUser() {
+        if (this.deletedAt == null) {
+            this.memberStatus = MemberStatus.QUIT;
+            this.deletedAt = LocalDateTime.now();
+        }
     }
 
     public boolean isDeleted() {
         return this.deletedAt != null;
+    }
+
+    public void updateStatus(MemberStatus newStatus) {
+        this.memberStatus = newStatus;
     }
 }

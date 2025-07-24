@@ -5,6 +5,44 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
+  jwt:
+    secret: vjldksjfoiejfoaiejflskfjlsdkfjsoeifjdfkdfjlekdfjdkfjei
+
+  security:
+    oauth2:
+      client:
+
+        registration:
+          kakao:
+            client-name: kakao
+            client-id:     ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri:  http://localhost:8080/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, profile_image
+            client-authentication-method: client_secret_post
+
+          google:
+            client-name: google
+            client-id:     ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri:  http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope: profile, email
+
+        provider:
+          kakao:
+            authorization-uri:     https://kauth.kakao.com/oauth/authorize
+            token-uri:             https://kauth.kakao.com/oauth/token
+            user-info-uri:         https://kapi.kakao.com/v2/user/me
+            user-name-attribute:   properties
+          google:
+            authorization-uri:   https://accounts.google.com/o/oauth2/v2/auth
+            token-uri:           https://oauth2.googleapis.com/token
+            user-info-uri:       https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+
+
 
 logging:
   level:
@@ -38,10 +76,11 @@ info:
   app:
     environment: QA환경
 
-oauth2:
-  google:
-    client-id: ${GOOGLE_CLIENT_ID}
-    client-secret: ${GOOGLE_CLIENT_SECRET}
-  kakao:
-    client-id: ${KAKAO_CLIENT_ID}
-    client-secret: ${KAKAO_CLIENT_SECRET:empty} # QA 서버의 경우 CLIENT_SECRET이 없음
+#oauth2:
+#  google:
+#    client-id: ${GOOGLE_CLIENT_ID}
+#    client-secret: ${GOOGLE_CLIENT_SECRET}
+#  kakao:
+#    client-id: ${KAKAO_CLIENT_ID}
+#    client-secret: ${KAKAO_CLIENT_SECRET:empty} # QA 서버의 경우 CLIENT_SECRET이 없음
+

@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: qa.test
   application:
     name: mvp
 
@@ -56,4 +58,6 @@ resources:
 # Logging Levels
 logging:
   level:
-    org.springframework.security: error
+    org.springframework.security: debug
+    org.springframework.security.oauth2.client: TRACE
+    org.springframework.security.oauth2.core: TRACE

@@ -2,6 +2,8 @@ package com.codezerotoone.mvp.domain.member.member.repository;
 
 import com.codezerotoone.mvp.domain.member.member.entity.Member;
 import com.codezerotoone.mvp.domain.member.member.repository.extend.ExtendedMemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -42,4 +44,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, ExtendedM
                 AND m.oidcId = :oidcId
             """)
     Optional<Member> findByOdicId(@Param("oidcId") String oidcId);
+
+    Page<Member> findAllByDeletedAtIsNull(Pageable pageable);
 }
