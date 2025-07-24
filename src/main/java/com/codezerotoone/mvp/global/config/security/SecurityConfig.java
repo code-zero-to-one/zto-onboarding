@@ -1,6 +1,11 @@
 package com.codezerotoone.mvp.global.config.security;
 
+import com.codezerotoone.mvp.domain.member.auth.service.CustomAccessDeniedHandler;
+import com.codezerotoone.mvp.domain.member.auth.service.CustomAuthenticationEntryPoint;
 import com.codezerotoone.mvp.domain.member.auth.service.CustomOAuth2UserService;
+import com.codezerotoone.mvp.domain.member.auth.service.CustomSuccessHandler;
+import com.codezerotoone.mvp.global.security.filter.JwtFilter;
+import com.codezerotoone.mvp.global.util.JwtUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +37,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // Form 로그인 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 방식 disable
                 .oauth2Login((oauth2) -> oauth2
+                        .loginPage("/custom/login")
                         .userInfoEndpoint(
                                 (userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
@@ -44,9 +50,8 @@ public class SecurityConfig {
                         .hasRole("GUEST")
                         .requestMatchers("/api/v1/**")
                         .hasRole("MEMBER")
-                        .requestMatchers("/api/v1/auth/refresh", "/api/auth/check/login")
+                        .requestMatchers("/", "/custom/login", "/login", "/oauth2/authorization/**", "/api/v1/auth/refresh", "/api/auth/check/login")
                         .permitAll()
-                        .anyRequest().hasAnyRole() // 나머지 경로는 인증 필요
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
