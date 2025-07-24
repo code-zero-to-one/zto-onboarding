@@ -52,6 +52,9 @@ public class DefaultMemberService implements MemberService {
 
     @Override
     public void deleteMember(Long memberId) throws MemberNotFoundException {
-        throw new UnsupportedOperationException();
+        Member member = memberRepository.findNotDeletedMemberById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        member.deleteUser();
     }
 }

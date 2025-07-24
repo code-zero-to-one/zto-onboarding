@@ -43,7 +43,7 @@ public class MemberController {
     @DeleteMapping("/{memberId}")
     @MemberDeletionApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteMember(@PathVariable("memberId") Long memberId) {
-        this.memberService.deleteMember(memberId);
+        memberService.deleteMember(memberId);
         return ResponseEntity.ok(BaseResponse.of(HttpStatus.OK));
     }
 }
