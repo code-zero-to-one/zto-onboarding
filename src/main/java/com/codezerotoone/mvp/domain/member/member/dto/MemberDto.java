@@ -14,7 +14,7 @@ public class MemberDto {
     private String oidcId;
     private String loginId;
     private MemberStatus memberStatus;
-    private Role role;
+    private String role;
 
     public static MemberDto fromEntity(Member member) {
         return MemberDto.builder()
@@ -22,7 +22,7 @@ public class MemberDto {
                 .oidcId(member.getOidcId())
                 .loginId(member.getLoginId())
                 .memberStatus(member.getMemberStatus())
-                .role(member.getRole())
+                .role(member.getRole().getRoleId())
                 .build();
     }
 }
