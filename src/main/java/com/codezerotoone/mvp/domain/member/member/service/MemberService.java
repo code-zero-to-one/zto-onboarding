@@ -2,8 +2,11 @@ package com.codezerotoone.mvp.domain.member.member.service;
 
 import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.member.dto.MemberCreationResponseDto;
+import com.codezerotoone.mvp.domain.member.member.dto.MemberListDto;
 import com.codezerotoone.mvp.domain.member.member.dto.request.MemberCreationRequestDto;
 import com.codezerotoone.mvp.domain.member.member.exception.MemberNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface MemberService {
 
@@ -18,4 +21,5 @@ public interface MemberService {
     void deleteMember(Long memberId) throws MemberNotFoundException;
 
     void updateStatus(Long memberId, MemberStatus status);
+    Page<MemberListDto> listMember(Pageable pageable);
 }
