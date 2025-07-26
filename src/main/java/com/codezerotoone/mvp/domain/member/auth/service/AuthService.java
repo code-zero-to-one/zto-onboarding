@@ -22,7 +22,8 @@ public class AuthService {
     private final TokenSupport tokenSupport;
     private final MemberRepository memberRepository;
 
-    @Transactional
+    // 변경 사유: 리소스 서버로의 요청이 pending되는 경우 무한 대기를 하는 것보다 실패 피드백을 반환하는 편이 낫다고 생각됩니다.
+    @Transactional(timeout = 30)
     public LoginResult loginByOAuth2(String code, String redirectUri, AuthVendor authVendor)
             throws UnsupportedCodeException {
         GrantedTokenInfo grantedTokenInfo = this.tokenSupport.grantToken(code, redirectUri, authVendor);

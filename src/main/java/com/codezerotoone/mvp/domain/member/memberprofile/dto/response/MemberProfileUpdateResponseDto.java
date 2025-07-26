@@ -43,7 +43,30 @@ public record MemberProfileUpdateResponseDto(
         List<IdNameDto> interests
 ) {
 
-        public static MemberProfileUpdateResponseDto of(MemberProfile memberProfile, String profileImageUploadUrl) {
+        public static MemberProfileUpdateResponseDto from(MemberProfile memberProfile) {
+                return MemberProfileUpdateResponseDto.builder()
+                        .memberId(memberProfile.getMemberId())
+                        .name(memberProfile.getMemberName())
+                        .tel(memberProfile.getMemberProfileData().getTel())
+                        .githubLink(NullSafetyUtils.extractSafely(
+                                memberProfile.getMemberProfileData().getPrimarySocialMedia(PrimarySocialMediaType.GITHUB),
+                                SocialMedia::getUrl))
+                        .blogOrSnsLink(NullSafetyUtils.extractSafely(
+                                memberProfile.getMemberProfileData().getPrimarySocialMedia(PrimarySocialMediaType.BLOG_OR_SNS),
+                                SocialMedia::getUrl))
+                        .simpleIntroduction(memberProfile.getMemberProfileData().getSimpleIntroduction())
+                        .mbti(memberProfile.getMemberProfileData().getMbti())
+                        .interests(
+                                memberProfile.getMemberProfileData()
+                                        .getMemberInterests()
+                                        .stream()
+                                        .map((mi) -> new IdNameDto(mi.getMemberInterestId(), mi.getName()))
+                                        .toList()
+                        )
+                        .build();
+        }
+
+        public static MemberProfileUpdateResponseDto from(MemberProfile memberProfile, String profileImageUploadUrl) {
                 return MemberProfileUpdateResponseDto.builder()
                         .memberId(memberProfile.getMemberId())
                         .name(memberProfile.getMemberName())

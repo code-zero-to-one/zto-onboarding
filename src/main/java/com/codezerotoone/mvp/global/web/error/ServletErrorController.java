@@ -36,16 +36,8 @@ public class ServletErrorController implements ErrorController {
         }
 
         return new ResponseEntity<>(
-                ErrorResponse.of(
-                        // TODO: switch문으로 하는 게 좋을 것인가, 아니면 Enum 값들을 순회하는 게 좋을 것인가?
-                        switch (status) {
-                            case 404 -> CommonErrorCode.RESOURCE_NOT_FOUND;
-                            case 405 -> CommonErrorCode.HTTP_METHOD_NOT_ALLOWED;
-                            case 415 -> CommonErrorCode.UNSUPPORTED_MEDIA_TYPE;
-                            default -> CommonErrorCode.INTERNAL_SERVER_ERROR;
-                        },
-                        detail
-                ),
+                // 변경 사유: 기존의 switch도 나쁘지 않지만, 결합도가 높아 ServletErrorController가 ErrorResponse의 내부 구현에 의존하게 되므로 유지보수가 어렵다고 생각됩니다.
+                ErrorResponse.of(CommonErrorCode.get(status), detail),
                 HttpStatus.valueOf(status)
         );
     }

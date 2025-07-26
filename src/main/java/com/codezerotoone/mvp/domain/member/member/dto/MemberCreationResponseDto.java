@@ -10,4 +10,7 @@ public record MemberCreationResponseDto(
         @Schema(description = "프로필 이미지를 업로드할 URL")
         String uploadUrl
 ) {
+        public static MemberCreationResponseDto of(Long memberId) {
+                return new MemberCreationResponseDto(memberId, null);
+        }
 }

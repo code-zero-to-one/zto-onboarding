@@ -2,6 +2,7 @@ package com.codezerotoone.mvp.domain.member.memberprofile.service;
 
 import com.codezerotoone.mvp.domain.image.constant.ImageExtension;
 import com.codezerotoone.mvp.domain.member.member.exception.MemberNotFoundException;
+import com.codezerotoone.mvp.domain.member.memberprofile.constant.MemberEndpoint;
 import com.codezerotoone.mvp.domain.member.memberprofile.constant.PrimarySocialMediaType;
 import com.codezerotoone.mvp.domain.member.memberprofile.dto.StudySubjectDto;
 import com.codezerotoone.mvp.domain.member.memberprofile.dto.request.MemberInfoUpdateRequestDto;
@@ -20,8 +21,8 @@ import com.codezerotoone.mvp.domain.member.memberprofile.repository.MemberIntere
 import com.codezerotoone.mvp.domain.member.memberprofile.repository.MemberProfileRepository;
 import com.codezerotoone.mvp.domain.member.memberprofile.repository.StudySubjectRepository;
 import com.codezerotoone.mvp.global.file.url.FileUrlResolver;
+import com.codezerotoone.mvp.global.util.FormatValidator;
 import com.codezerotoone.mvp.global.util.NullSafetyUtils;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,35 +72,55 @@ public class DefaultMemberProfileService implements MemberProfileService {
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         MemberProfileAtomicUpdateDto atomicUpdateDto = mapper.toMemberProfileUpdateDto(dto);
-        memberProfile.getMemberProfileData().updateAtomicValues(atomicUpdateDto, ignoreNull);
 
-        this.memberInterestRepository.deleteByMemberId(memberId);
+        // 변경 사유: 서비스 컴포넌트에서 Getter로 꺼내어 수정하는 것보다, DDD 리치 모델에 입각해 MemberProfile 엔티티가 스스로의 상태를 관리하도록 하는 것이 나아 보입니다.
+        memberProfile.updateAtomicValues(atomicUpdateDto, ignoreNull);
 
-        this.memberInterestRepository.saveAll(
+        memberInterestRepository.deleteByMemberId(memberId);
+
+        memberInterestRepository.saveAll(
                 NullSafetyUtils.replaceEmptyIfNull(dto.getInterests()).stream()
-                        .map((v) -> MemberInterest.create(memberProfile, v))
+                        .map((v) -> MemberInterest.of(memberProfile, v))
                         .toList()
         );
 
-        if (dto.getGithubLink() != null) {
+        // 변경 사유: 값이 있는지를 검사하려는 것이므로, null 체크만으로는 부족하다고 생각됩니다.
+        if (FormatValidator.hasValue(dto.getGithubLink())) {
             memberProfile.updatePrimarySocialMediaLink(dto.getGithubLink(), PrimarySocialMediaType.GITHUB);
         }
 
-        if (dto.getBlogOrSnsLink() != null) {
+        // 변경 사유: 값이 있는지를 검사하려는 것이므로, null 체크만으로는 부족하다고 생각됩니다.
+        if (FormatValidator.hasValue(dto.getBlogOrSnsLink())) {
             memberProfile.updatePrimarySocialMediaLink(dto.getBlogOrSnsLink(), PrimarySocialMediaType.BLOG_OR_SNS);
         }
 
-        if (dto.getProfileImageExtension() != null && dto.getProfileImageExtension().isDefaultImage()) {
-            memberProfile.updateProfileImage(null);
-            // TODO: delete Image and ResizedImage
+        // 추가 사유: 기존 코드는 dto 인스턴스에서 getProfileImageExtension 메서드를 반복적으로 호출하고 있으며, 읽기에도 어렵습니다.
+        ImageExtension extension = dto.getProfileImageExtension();
+
+        // 추가 사유: 파라미터에 null을 전송하는 것보다는 팩토리 메서드를 오버로딩하는 게 낫다고 생각됩니다.
+        // 기존 로직은 바로 아래의 기본 확장자 조건문에서 확장자 존재 여부를 검사하고, generateUuidFileUri 메서드를 호출하기 직전에 한 번 더 검사하고 있어 비효율적입니다.
+        if (!FormatValidator.hasValue(extension)) {
+            return MemberProfileUpdateResponseDto.from(memberProfile);
         }
 
-        // TODO: 굳이 쿼리를 한 번 더 날려야 하나?
-        MemberProfile findMemberProfile = this.memberProfileRepository.findNotDeletedMemberProfileById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        // 변경 사유: 부정 조건식과 긍정 조건식이 혼재돼 있는 경우, 읽기에 불편합니다.
+        if (extension.isDefaultImage()) {
+            memberProfile.updateProfileImage(null);
+            // TODO: delete Image and ResizedImage
 
-        return MemberProfileUpdateResponseDto.of(findMemberProfile,
-                generateProfileImageUploadUrl(memberId, dto.getProfileImageExtension()));
+            return MemberProfileUpdateResponseDto.from(memberProfile);
+        }
+
+        // 삭제 사유: 엔티티가 영속성 컨텍스트에서 관리되므로, 다시 조회할 필요가 없습니다.
+
+        // 변경 사유: MemberProfileService에서 ImageExtention의 유효성을 검사하는 것보다는, FileUrlResolver에서 검사하는 게 낫다고 생각됩니다.
+        String profileImageUploadUrl = fileUrlResolver.generateFileUploadUrl(
+                // 변경 사유: 프로필 생성 엔드포인트가 MemberService와 중복됩니다. 분리하여 재사용하는 편이 낫다고 생각됩니다.
+                MemberEndpoint.generateProfileImagePath(memberId), extension
+        );
+
+        // 변경 사유: 객체 기반의 변환 생성이므로 from이 보다 적합하다고 생각됩니다.
+        return MemberProfileUpdateResponseDto.from(memberProfile, profileImageUploadUrl);
     }
 
     private void validateMemberUpdate(MemberProfileUpdateRequestDto dto, boolean ignoreNull) {
@@ -131,17 +152,9 @@ public class DefaultMemberProfileService implements MemberProfileService {
         }
     }
 
-    private String generateProfileImageUploadUrl(Long memberId, @Nullable ImageExtension imageExtension) {
-        if (imageExtension == null || imageExtension.isDefaultImage()) {
-            return null;
-        }
-
-        String profileImageUri = this.fileUrlResolver.generateUuidFileUri(
-                imageExtension.getExtension(),
-                "members/" + memberId + "/profile/image"
-        );
-        return this.fileUrlResolver.generateFileUploadUrl(profileImageUri);
-    }
+    // 삭제 사유: 기존에 memberId를 파라미터로 받아 호출 객체와의 결합도가 높으며, 재사용성이 낮습니다.
+    // extension과 path를 받도록 하고, private 메서드를 여러 개 만드는 것보다는 기존의 FileUrlResolver를 호출하는 편이 나은 것 같습니다.
+    // MemberService의 역할에서도 벗어 났다고 생각됩니다.
 
     @Override
     public MemberProfileUpdateResponseDto updateProfile(Long memberId, MemberProfileUpdateRequestDto dto) throws MemberNotFoundException {

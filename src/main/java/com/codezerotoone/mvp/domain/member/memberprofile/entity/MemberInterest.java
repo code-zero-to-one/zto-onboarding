@@ -22,11 +22,14 @@ public class MemberInterest extends BaseEntity {
 
     private String name;
 
-    public static MemberInterest create(MemberProfile memberProfile, String name) {
-        MemberInterest memberInterest = new MemberInterest();
-        memberInterest.memberProfile = memberProfile;
-        memberInterest.name = name;
-        return memberInterest;
+    private MemberInterest(MemberProfile memberProfile, String name) {
+        this.memberProfile = memberProfile;
+        this.name = name;
+    }
+
+    // 변경 사유: 로직 간소화 및 팩토리 메서드명 수정했습니다.
+    public static MemberInterest of(MemberProfile memberProfile, String name) {
+        return new MemberInterest(memberProfile, name);
     }
 
     public void updateName(String name) {
