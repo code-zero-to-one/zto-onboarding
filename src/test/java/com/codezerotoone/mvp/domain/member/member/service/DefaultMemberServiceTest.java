@@ -58,17 +58,14 @@ class DefaultMemberServiceTest {
             ReflectionTestUtils.setField(generatedMember, "memberId", memberId);
             when(this.memberRepository.save(any())).thenReturn(generatedMember);
 
-            when(this.fileUrlResolver.generateUuidFileUri(any(), any()))
+            when(fileUrlResolver.generateFileUploadUrl(any(String.class), any(ImageExtension.class)))
                     .thenAnswer((invocationOnMock) -> {
+                        String path = invocationOnMock.getArgument(0);
+                        ImageExtension extension = invocationOnMock.getArgument(1);
                         String uuid = UUID.randomUUID().toString();
-                        String extension = invocationOnMock.getArgument(0);
-                        String filePath = invocationOnMock.getArgument(1);
-                        return filePath + "/" + uuid + "_" + System.currentTimeMillis() + "." + extension;
-                    });
-            when(this.fileUrlResolver.generateFileUploadUrl(any()))
-                    .thenAnswer((invocationOnMock) -> {
-                        String uri = invocationOnMock.getArgument(0);
-                        return fileUploadBaseUri + uri;
+                        String fileUri = path + "/" + uuid + "_" + System.currentTimeMillis() + "."
+                                + extension.getExtension();
+                        return fileUploadBaseUri + fileUri;
                     });
         }
 

@@ -38,8 +38,8 @@ class MemberInterestRepositoryTest {
         MemberProfile memberProfile = this.em.find(MemberProfile.class, member.getMemberId());
 
         List<MemberInterest> memberInterests = List.of(
-                MemberInterest.create(memberProfile, "hello"),
-                MemberInterest.create(memberProfile, "world")
+                MemberInterest.of(memberProfile, "hello"),
+                MemberInterest.of(memberProfile, "world")
         );
 
         memberInterests.forEach(this.em::persist);

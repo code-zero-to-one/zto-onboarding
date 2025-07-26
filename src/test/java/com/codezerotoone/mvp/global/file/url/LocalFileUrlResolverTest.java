@@ -1,5 +1,6 @@
 package com.codezerotoone.mvp.global.file.url;
 
+import com.codezerotoone.mvp.domain.image.constant.ImageExtension;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,11 @@ class LocalFileUrlResolverTest {
     @DisplayName("적절한 포맷의 파일 확장자와 path를 파라미터로 전달할 경우, \"/\"로 시작하지 않는 파일 URI 생성")
     void generateUuidFileUri_success() {
         // Given
-        final String extension = "jpg";
+        final ImageExtension extension = ImageExtension.JPG;
         final String path = "files/images";
 
         // When
-        String result = this.resolver.generateUuidFileUri(extension, path);
+        String result = this.resolver.generateUuidFileUri(path, extension);
         log.info("result={}", result);
 
         // Then

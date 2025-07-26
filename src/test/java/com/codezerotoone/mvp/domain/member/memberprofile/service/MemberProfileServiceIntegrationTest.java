@@ -73,13 +73,18 @@ public class MemberProfileServiceIntegrationTest {
             return new FileUrlResolver() {
 
                 @Override
-                public String generateUuidFileUri(String extension, String path) throws IllegalArgumentException {
-                    return path + "/test-file." + extension;
+                public String generateUuidFileUri(String path, ImageExtension extension) throws IllegalArgumentException {
+                    return path + "/test-file." + extension.getExtension();
                 }
 
                 @Override
                 public String generateFileUploadUrl(String fileUri) throws NullPointerException {
                     return "https://img.zeroone.it.kr/" + fileUri;
+                }
+
+                @Override
+                public String generateFileUploadUrl(String path, ImageExtension extension) throws NullPointerException {
+                    return generateFileUploadUrl(generateUuidFileUri(path, extension));
                 }
 
                 @Override
