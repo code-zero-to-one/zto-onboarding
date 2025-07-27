@@ -13,15 +13,15 @@ public interface MemberRepository extends JpaRepository<Member, Long>, ExtendedM
     @Query("""
             SELECT m
             FROM Member m
-            WHERE m.deletedAt IS NULL
-                AND m.memberId = :memberId
+            WHERE m.deleteYn = false
+                AND m.id = :memberId
             """)
     Optional<Member> findNotDeletedMemberById(@Param("memberId") Long memberId);
 
     @Query("""
             SELECT m
             FROM Member m
-            WHERE m.deletedAt IS NULL
+            WHERE m.deleteYn = false
                 AND m.loginId = :loginId
             """)
     Optional<Member> findByLoginId(@Param("loginId") String loginId);
@@ -29,7 +29,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, ExtendedM
     @Query(value = """
             SELECT COUNT(*) > 0
             FROM member m
-            WHERE m.deleted_at IS NULL
+            WHERE m.deleteYn = false
                  AND m.login_id = :loginId
             LIMIT 1
             """, nativeQuery = true)
@@ -38,7 +38,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, ExtendedM
     @Query(value = """
             SELECT m
             FROM Member m
-            WHERE m.deletedAt IS NULL
+            WHERE m.deleteYn = false
                 AND m.oidcId = :oidcId
             """)
     Optional<Member> findByOdicId(@Param("oidcId") String oidcId);

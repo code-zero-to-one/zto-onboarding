@@ -22,16 +22,17 @@ public class MemberInterest extends BaseEntity {
 
     private String name;
 
-    public static MemberInterest create(MemberProfile memberProfile, String name) {
-        MemberInterest memberInterest = new MemberInterest();
-        memberInterest.memberProfile = memberProfile;
-        memberInterest.name = name;
-        return memberInterest;
-    }
-
-    public void updateName(String name) {
+    private MemberInterest(MemberProfile memberProfile, String name) {
+        this.memberProfile = memberProfile;
         this.name = name;
     }
+
+    // 변경 사유: 로직 간소화 및 팩토리 메서드명 수정했습니다.
+    public static MemberInterest of(MemberProfile memberProfile, String name) {
+        return new MemberInterest(memberProfile, name);
+    }
+
+    // 삭제 사유: 사용되지 않아 삭제했으며, 명칭만 다를 뿐 setter의 역할을 하는 메서드이므로 바람직하지 않다고 보입니다.
 
     public void detachMemberProfile() {
         this.memberProfile = null;

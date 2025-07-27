@@ -24,6 +24,6 @@ public class ImageService {
     public Long saveImage(String location, List<ResizedImageInfo> imageInfos) {
         Image newImage = Image.create(location, imageInfos);
         newImage = this.imageRepository.save(newImage);
-        return newImage.getImageId();
+        return newImage.getId();
     }
 }

@@ -35,11 +35,11 @@ class MemberInterestRepositoryTest {
         Member member = Member.createGeneralMember("sample", "안유진");
         this.em.persist(member);
 
-        MemberProfile memberProfile = this.em.find(MemberProfile.class, member.getMemberId());
+        MemberProfile memberProfile = this.em.find(MemberProfile.class, member.getId());
 
         List<MemberInterest> memberInterests = List.of(
-                MemberInterest.create(memberProfile, "hello"),
-                MemberInterest.create(memberProfile, "world")
+                MemberInterest.of(memberProfile, "hello"),
+                MemberInterest.of(memberProfile, "world")
         );
 
         memberInterests.forEach(this.em::persist);

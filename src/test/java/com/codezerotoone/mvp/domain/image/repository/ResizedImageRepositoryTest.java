@@ -43,11 +43,11 @@ class ResizedImageRepositoryTest {
         resizedImage = this.resizedImageRepository.save(resizedImage);
 
         // Then
-        Long generatedId = resizedImage.getResizedImageId();
+        Long generatedId = resizedImage.getId();
         Optional<ResizedImage> findResizedImageOp = this.resizedImageRepository.findById(generatedId);
         assertThat(findResizedImageOp).isNotEmpty();
-        assertThat(findResizedImageOp.get().getResizedImageId()).isEqualTo(generatedId);
-        assertThat(findResizedImageOp.get().getImage().getImageId()).isEqualTo(image.getImageId());
+        assertThat(findResizedImageOp.get().getId()).isEqualTo(generatedId);
+        assertThat(findResizedImageOp.get().getImage().getId()).isEqualTo(image.getId());
         assertThat(findResizedImageOp.get().getImageSizeType()).isEqualTo(ImageSizeType.ORIGINAL);
         assertThat(findResizedImageOp.get().getResizedImageUrl()).isEqualTo(resizedImage.getResizedImageUrl());
     }

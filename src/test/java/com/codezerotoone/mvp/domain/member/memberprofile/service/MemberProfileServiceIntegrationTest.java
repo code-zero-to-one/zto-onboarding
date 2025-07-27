@@ -73,13 +73,18 @@ public class MemberProfileServiceIntegrationTest {
             return new FileUrlResolver() {
 
                 @Override
-                public String generateUuidFileUri(String extension, String path) throws IllegalArgumentException {
-                    return path + "/test-file." + extension;
+                public String generateUuidFileUri(String path, ImageExtension extension) throws IllegalArgumentException {
+                    return path + "/test-file." + extension.getExtension();
                 }
 
                 @Override
                 public String generateFileUploadUrl(String fileUri) throws NullPointerException {
                     return "https://img.zeroone.it.kr/" + fileUri;
+                }
+
+                @Override
+                public String generateFileUploadUrl(String path, ImageExtension extension) throws NullPointerException {
+                    return generateFileUploadUrl(generateUuidFileUri(path, extension));
                 }
 
                 @Override
@@ -190,7 +195,7 @@ public class MemberProfileServiceIntegrationTest {
         // When
         List<MemberInfoUpdateResponseDto> results = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            results.add(this.memberProfileService.updateMemberInfo(member.getMemberId(), dto, true));
+            results.add(this.memberProfileService.updateMemberInfo(member.getId(), dto, true));
         }
 
         // Then
@@ -198,7 +203,7 @@ public class MemberProfileServiceIntegrationTest {
         // Compare parameters and returns
         {
             MemberInfoUpdateResponseDto firstResult = results.getFirst();
-            assertThat(firstResult.memberId()).isEqualTo(member.getMemberId());
+            assertThat(firstResult.memberId()).isEqualTo(member.getId());
             assertThat(firstResult.selfIntroduction()).isEqualTo(selfIntroduction);
             assertThat(firstResult.studyPlan()).isEqualTo(studyPlan);
             assertThat(firstResult.preferredStudySubjectId()).isEqualTo(preferredStudySubjectId);
@@ -216,7 +221,7 @@ public class MemberProfileServiceIntegrationTest {
         }
 
         // Validate entity
-        MemberProfile memberProfile = this.em.find(MemberProfile.class, member.getMemberId());
+        MemberProfile memberProfile = this.em.find(MemberProfile.class, member.getId());
         MemberInfo memberInfo = memberProfile.getMemberInfo();
         assertThat(memberInfo.getSelfIntroduction()).isEqualTo(selfIntroduction);
         assertThat(memberInfo.getStudyPlan()).isEqualTo(studyPlan);
@@ -251,7 +256,7 @@ public class MemberProfileServiceIntegrationTest {
         // Update member profile
         // Iterate multiple times
         for (int i = 0; i < 100; i++) {
-            this.memberProfileService.updateProfile(member.getMemberId(), MemberProfileUpdateRequestDto.builder()
+            this.memberProfileService.updateProfile(member.getId(), MemberProfileUpdateRequestDto.builder()
                     .name("유진수")
                     .tel("010-4124-2422")
                     .githubLink("https://github.com/rudeh1253")
@@ -263,7 +268,7 @@ public class MemberProfileServiceIntegrationTest {
                     .profileImageExtension(profileImageExtension)
                     .build());
 
-            this.memberProfileService.updateMemberInfo(member.getMemberId(), MemberInfoUpdateRequestDto.builder()
+            this.memberProfileService.updateMemberInfo(member.getId(), MemberInfoUpdateRequestDto.builder()
                     .selfIntroduction(selfIntroduction)
                     .preferredStudySubjectId(preferredStudySubjectId)
                     .availableStudyTimeIds(availableStudyTimeIds)
@@ -279,7 +284,7 @@ public class MemberProfileServiceIntegrationTest {
         member.getMemberProfile().getMemberProfileData().updateProfileImage(profileImage);
 
         // Get Member Profile
-        FullMemberProfileResponseDto memberProfileDto = this.memberProfileService.getMemberProfile(member.getMemberId());
+        FullMemberProfileResponseDto memberProfileDto = this.memberProfileService.getMemberProfile(member.getId());
         MemberProfileResponseDto memberProfileDataDto = memberProfileDto.memberProfile();
         MemberInfoResponseDto memberInfoDto = memberProfileDto.memberInfo();
 
@@ -308,7 +313,7 @@ public class MemberProfileServiceIntegrationTest {
 
         Member member = Member.createGeneralMemberBySocialLogin(memberName, "152621421");
         this.em.persist(member);
-        Long memberId = member.getMemberId();
+        Long memberId = member.getId();
 
         List<Long> techStackIdsToUpdate = this.techStacks.stream()
                 .map(TechStack::getTechStackId)

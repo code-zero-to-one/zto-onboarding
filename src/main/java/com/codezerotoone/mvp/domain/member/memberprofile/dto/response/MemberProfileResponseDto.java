@@ -55,13 +55,13 @@ public record MemberProfileResponseDto(
                 .memberName(memberProfileData.getMemberName())
                 .profileImage(
                         memberProfileData.getProfileImage() != null
-                                ? new ImageDto(memberProfileData.getProfileImage().getImageId(),
+                                ? new ImageDto(memberProfileData.getProfileImage().getId(),
                                 memberProfileData.getProfileImage().getResizedImages()
                                         .stream()
-                                        .filter(ResizedImage::isNotDeleted)
+                                        .filter(ri -> !ri.isDeleted())
                                         .map((ri) ->
                                                 new ResizedImageDto(
-                                                        ri.getResizedImageId(),
+                                                        ri.getId(),
                                                         ri.getFullResizedImageUrl(),
                                                         new ImageSizeTypeDto(
                                                                 ri.getImageSizeType().name(),

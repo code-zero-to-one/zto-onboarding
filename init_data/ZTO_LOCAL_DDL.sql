@@ -18,7 +18,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 
 CREATE TABLE `member` (
-  `member_id` bigint PRIMARY KEY AUTO_INCREMENT COMMENT '회원 Identifier',
+  `id` bigint PRIMARY KEY AUTO_INCREMENT COMMENT '회원 Identifier',
   `oidc_id` varchar(50) COMMENT 'Open ID Connect에 의한 ID',
   `login_id` VARCHAR(50) COMMENT '로그인할 때 사용되는 ID (자체 로그인)',
   `member_status` VARCHAR(8) NOT NULL DEFAULT 'ACTIVE' COMMENT '회원 상태',
@@ -29,18 +29,18 @@ CREATE TABLE `member` (
 );
 
 CREATE TABLE `role` (
-  `role_id` varchar(20) PRIMARY KEY COMMENT '권한 ID',
+  `id` varchar(20) PRIMARY KEY COMMENT '권한 ID',
   `role_name` varchar(20) NOT NULL COMMENT '권한명'
 );
 
 CREATE TABLE `access_permission` (
-  `permission_id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '접근허가 ID',
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '접근허가 ID',
   `endpoint` VARCHAR(80) NOT NULL COMMENT '엔드포인트',
   `http_method` VARCHAR(8) NOT NULL COMMENT 'HTTP 메소드 (Upper Case)' /* CHAR로 변경 고려 */
 );
 
 CREATE TABLE `access_permission_role` (
-  `access_permission_role_id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '접근허가_롤 ID',
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '접근허가_롤 ID',
   `permission_id` BIGINT NOT NULL COMMENT '접근허가 참조 FK',
   `role_id` VARCHAR(20) NOT NULL COMMENT '권한 참조 FK'
 );
@@ -59,7 +59,7 @@ CREATE TABLE `member_profile` (
 );
 
 CREATE TABLE `member_interest` (
-  member_interest_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '관심사 ID',
+  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '관심사 ID',
   name VARCHAR(20) NOT NULL COMMENT '관심사 이름',
   member_id BIGINT NOT NULL COMMENT '회원 프로필 참조 FK',
   `created_at` timestamp NOT NULL COMMENT '생성시간',
@@ -67,7 +67,7 @@ CREATE TABLE `member_interest` (
 );
 
 CREATE TABLE `available_study_time` (
-  available_study_time_id BIGINT PRIMARY KEY COMMENT '스터디 가능 시간대 ID',
+  id BIGINT PRIMARY KEY COMMENT '스터디 가능 시간대 ID',
   from_time TIME(6) COMMENT '스터디 가능 시작 시간 (날짜 빼고 시간만 사용)',
   to_time TIME(6) COMMENT '스터디 가능 끝 시간 (날짜 빼고 시간만 사용)',
   label VARCHAR(10) NOT NULL COMMENT '시간대 라벨 (오전, 오후, 저녁 등등)',
@@ -76,13 +76,13 @@ CREATE TABLE `available_study_time` (
 );
 
 CREATE TABLE `profile_avl_time` (
-  available_study_time_id BIGINT NOT NULL COMMENT '스터디 가능 시간대 참조 FK',
+  id BIGINT NOT NULL COMMENT '스터디 가능 시간대 참조 FK',
   member_id BIGINT NOT NULL COMMENT '회원 프로필 참조 FK',
   PRIMARY KEY (available_study_time_id, member_id)
 );
 
 CREATE TABLE `image` (
-  `image_id` bigint PRIMARY KEY AUTO_INCREMENT COMMENT '이미지 ID',
+  `id` bigint PRIMARY KEY AUTO_INCREMENT COMMENT '이미지 ID',
   `location` VARCHAR(80) NOT NULL COMMENT '이미지가 저장된 장소 (도메인 URL)',
   `created_at` timestamp DEFAULT NOW() COMMENT '생성시간',
   `updated_at` timestamp DEFAULT NOW() COMMENT '수정시간',
@@ -90,7 +90,7 @@ CREATE TABLE `image` (
 );
 
 CREATE TABLE `resized_image` (
-  `resized_image_id` bigint AUTO_INCREMENT COMMENT '리사이징 이미지 ID',
+  `id` bigint AUTO_INCREMENT COMMENT '리사이징 이미지 ID',
   `image_id` bigint NOT NULL COMMENT '이미지 참조 FK',
   -- ENUM('THUMB','SMALL','LARGE','ETC') -> VARCHAR(10)
   `resized_image_url` varchar(255) NOT NULL COMMENT '리사이징 이미지 URL',
@@ -100,13 +100,13 @@ CREATE TABLE `resized_image` (
 );
 
 CREATE TABLE `social_media_type` (
-  `social_media_type_id` VARCHAR(20) PRIMARY KEY,
+  `id` VARCHAR(20) PRIMARY KEY,
   `social_media_name` varchar(100) NOT NULL,
   `icon_id` BIGINT
 );
 
 CREATE TABLE `social_media` (
-  `social_media_id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `member_id` bigint NOT NULL,
   `social_media_type_id` VARCHAR(255) NOT NULL,
   `url` varchar(255) NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE `social_media` (
 );
 
 CREATE TABLE `tech_stack` (
-  tech_stack_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
   code CHAR(3) NOT NULL UNIQUE,
   tech_stack_name VARCHAR(100) NOT NULL,
   parent_id BIGINT,
@@ -126,7 +126,7 @@ CREATE TABLE `tech_stack` (
 );
 
 CREATE TABLE `tech_stack_ref` (
-  `tech_stack_ref_id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `tech_stack_id` BIGINT NOT NULL,
   `member_id` bigint NOT NULL,
   `type` VARCHAR(30) NOT NULL

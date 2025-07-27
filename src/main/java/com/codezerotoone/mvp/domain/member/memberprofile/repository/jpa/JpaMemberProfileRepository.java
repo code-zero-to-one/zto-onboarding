@@ -12,9 +12,9 @@ public interface JpaMemberProfileRepository extends JpaRepository<MemberProfile,
     @Query("""
             SELECT m
             FROM MemberProfile m
-            LEFT JOIN Image i ON i.imageId = m.memberProfileData.profileImage.imageId
-            WHERE m.member.deletedAt IS NULL
-                AND m.member.memberId = :memberId
+            LEFT JOIN Image i ON i.id = m.memberProfileData.profileImage.id
+            WHERE m.member.deleteYn = false
+                AND m.member.id = :memberId
             """)
     Optional<MemberProfile> findNotDeletedMemberProfileById(@Param("memberId") Long memberId);
 }

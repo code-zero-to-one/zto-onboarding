@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 public enum CommonErrorCode implements ErrorCodeSpec {
@@ -16,4 +18,11 @@ public enum CommonErrorCode implements ErrorCodeSpec {
     private final int statusCode;
     private final String errorCode;
     private final String message;
+
+    public static CommonErrorCode get(int statusCode) {
+        return Arrays.stream(CommonErrorCode.values())
+                .filter(code -> code.getStatusCode() == statusCode)
+                .findFirst()
+                .orElse(INTERNAL_SERVER_ERROR);
+    }
 }

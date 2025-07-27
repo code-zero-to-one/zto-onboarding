@@ -3,6 +3,7 @@ package com.codezerotoone.mvp.domain.member.memberprofile.entity;
 import com.codezerotoone.mvp.domain.image.entity.Image;
 import com.codezerotoone.mvp.domain.member.member.entity.Member;
 import com.codezerotoone.mvp.domain.member.memberprofile.constant.PrimarySocialMediaType;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.dto.MemberProfileAtomicUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.slf4j.Logger;
@@ -52,6 +53,10 @@ public class MemberProfile {
 
     public String getMemberName() {
         return this.memberProfileData.getMemberName();
+    }
+
+    public void updateAtomicValues(MemberProfileAtomicUpdateDto atomicUpdateDto, boolean ignoreNull) {
+        memberProfileData.updateAtomicValues(atomicUpdateDto, ignoreNull);
     }
 
     public void updateProfileImage(Image image) {

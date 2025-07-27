@@ -291,7 +291,7 @@ public class MemberProfileIntegrationTest {
         Member member = Member.createGeneralMemberBySocialLogin("안유진", "123");
         Member savedMember = this.memberRepository.save(member);
 
-        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile", savedMember.getMemberId())
+        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile", savedMember.getId())
                 .build();
 
         // When
@@ -310,7 +310,7 @@ public class MemberProfileIntegrationTest {
 
         FullMemberProfileResponseDto content = responseBody.getContent();
 
-        assertThat(content.memberId()).isEqualTo(savedMember.getMemberId());
+        assertThat(content.memberId()).isEqualTo(savedMember.getId());
         assertThat(content.autoMatching()).isFalse(); // autoMatching is false by default
 
         // Validate content.memberInfo
@@ -341,7 +341,7 @@ public class MemberProfileIntegrationTest {
         Member member = Member.createGeneralMemberBySocialLogin("안유진", "123");
         Member savedMember = this.memberRepository.save(member);
 
-        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile/for-study", savedMember.getMemberId())
+        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile/for-study", savedMember.getId())
                 .build();
 
         // When
@@ -366,7 +366,7 @@ public class MemberProfileIntegrationTest {
 
         final String accessToken = "{\"id\":\"456\"}";
 
-        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile/for-study", savedMember.getMemberId())
+        RequestEntity<Void> request = RequestEntity.get(this.serverOrigin + "/api/v1/members/{memberId}/profile/for-study", savedMember.getId())
                 // 로그인은 했지만 회원가입은 하지 않은 경우, Guest
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .build();
@@ -498,7 +498,7 @@ public class MemberProfileIntegrationTest {
         member = this.memberRepository.save(member);
 
         RequestEntity<String> request = RequestEntity.post(this.serverOrigin + "/api/v1/members/{memberId}/profile",
-                        member.getMemberId())
+                        member.getId())
                 .header(HttpHeaders.AUTHORIZATION, jsonAccessToken)
                 .header(HttpMethodOverrideConstant.HEADER_NAME, "PATCH")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -526,7 +526,7 @@ public class MemberProfileIntegrationTest {
 
         // Then
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(responseContent.memberId()).isEqualTo(member.getMemberId());
+        assertThat(responseContent.memberId()).isEqualTo(member.getId());
         assertThat(responseContent.name()).isEqualTo("이현서");
         assertThat(responseContent.tel()).isEqualTo("010-1234-1234");
         assertThat(responseContent.githubLink()).isEqualTo("https://localhost:8080/github");
@@ -541,7 +541,7 @@ public class MemberProfileIntegrationTest {
                 );
 
         // Validate member profile in repository
-        Member findMember = this.memberRepository.findById(member.getMemberId()).orElseThrow();
+        Member findMember = this.memberRepository.findById(member.getId()).orElseThrow();
         MemberProfile memberProfile = findMember.getMemberProfile();
         MemberProfileData memberProfileData = memberProfile.getMemberProfileData();
         assertThat(memberProfile.getMemberName()).isEqualTo("이현서");
@@ -558,7 +558,7 @@ public class MemberProfileIntegrationTest {
                         WHERE sm.memberProfile.memberId = :memberId
                             AND smt.socialMediaTypeId = :socialMediaTypeId
                         """, SocialMedia.class)
-                .setParameter("memberId", member.getMemberId())
+                .setParameter("memberId", member.getId())
                 .setParameter("socialMediaTypeId", PrimarySocialMediaType.GITHUB.name())
                 .getSingleResult();
         assertThat(github.getUrl()).isEqualTo("https://localhost:8080/github");
@@ -571,7 +571,7 @@ public class MemberProfileIntegrationTest {
                         WHERE sm.memberProfile.memberId = :memberId
                             AND smt.socialMediaTypeId = :socialMediaTypeId
                         """, SocialMedia.class)
-                .setParameter("memberId", member.getMemberId())
+                .setParameter("memberId", member.getId())
                 .setParameter("socialMediaTypeId", PrimarySocialMediaType.BLOG_OR_SNS.name())
                 .getSingleResult();
         assertThat(blogOrSns.getUrl()).isEqualTo("https://localhost:8080/blog");
@@ -582,7 +582,7 @@ public class MemberProfileIntegrationTest {
                         FROM MemberInterest mi
                         WHERE mi.memberProfile.memberId = :memberId
                         """, MemberInterest.class)
-                .setParameter("memberId", member.getMemberId())
+                .setParameter("memberId", member.getId())
                 .getResultList();
         assertThat(memberInterests).extracting("name")
                 .containsExactlyInAnyOrder(
@@ -602,7 +602,7 @@ public class MemberProfileIntegrationTest {
         member = this.memberRepository.save(member);
 
         RequestEntity<String> request = RequestEntity.post(this.serverOrigin + "/api/v1/members/{memberId}/profile",
-                        member.getMemberId())
+                        member.getId())
                 .header(HttpHeaders.AUTHORIZATION, jsonAccessToken)
                 .header(HttpMethodOverrideConstant.HEADER_NAME, "PATCH")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -632,7 +632,7 @@ public class MemberProfileIntegrationTest {
 
             // Then
             assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-            assertThat(responseContent.memberId()).isEqualTo(member.getMemberId());
+            assertThat(responseContent.memberId()).isEqualTo(member.getId());
             assertThat(responseContent.name()).isEqualTo("이현서");
             assertThat(responseContent.tel()).isEqualTo("010-1234-1234");
             assertThat(responseContent.githubLink()).isEqualTo("https://localhost:8080/github");
@@ -647,7 +647,7 @@ public class MemberProfileIntegrationTest {
                     );
 
             // Validate member profile in repository
-            Member findMember = this.memberRepository.findById(member.getMemberId()).orElseThrow();
+            Member findMember = this.memberRepository.findById(member.getId()).orElseThrow();
             MemberProfile memberProfile = findMember.getMemberProfile();
             MemberProfileData memberProfileData = memberProfile.getMemberProfileData();
             assertThat(memberProfile.getMemberName()).isEqualTo("이현서");
@@ -658,37 +658,37 @@ public class MemberProfileIntegrationTest {
             // Validate collections
             // GitHub
             SocialMedia github = this.em.createQuery("""
-                        SELECT sm
-                        FROM SocialMedia sm
-                        INNER JOIN SocialMediaType smt ON smt.socialMediaTypeId = sm.socialMediaType.socialMediaTypeId
-                        WHERE sm.memberProfile.memberId = :memberId
-                            AND smt.socialMediaTypeId = :socialMediaTypeId
-                        """, SocialMedia.class)
-                    .setParameter("memberId", member.getMemberId())
+                            SELECT sm
+                            FROM SocialMedia sm
+                            INNER JOIN SocialMediaType smt ON smt.socialMediaTypeId = sm.socialMediaType.socialMediaTypeId
+                            WHERE sm.memberProfile.memberId = :memberId
+                                AND smt.socialMediaTypeId = :socialMediaTypeId
+                            """, SocialMedia.class)
+                    .setParameter("memberId", member.getId())
                     .setParameter("socialMediaTypeId", PrimarySocialMediaType.GITHUB.name())
                     .getSingleResult();
             assertThat(github.getUrl()).isEqualTo("https://localhost:8080/github");
 
             // Blog or SNS
             SocialMedia blogOrSns = this.em.createQuery("""
-                        SELECT sm
-                        FROM SocialMedia sm
-                        INNER JOIN SocialMediaType smt ON smt.socialMediaTypeId = sm.socialMediaType.socialMediaTypeId
-                        WHERE sm.memberProfile.memberId = :memberId
-                            AND smt.socialMediaTypeId = :socialMediaTypeId
-                        """, SocialMedia.class)
-                    .setParameter("memberId", member.getMemberId())
+                            SELECT sm
+                            FROM SocialMedia sm
+                            INNER JOIN SocialMediaType smt ON smt.socialMediaTypeId = sm.socialMediaType.socialMediaTypeId
+                            WHERE sm.memberProfile.memberId = :memberId
+                                AND smt.socialMediaTypeId = :socialMediaTypeId
+                            """, SocialMedia.class)
+                    .setParameter("memberId", member.getId())
                     .setParameter("socialMediaTypeId", PrimarySocialMediaType.BLOG_OR_SNS.name())
                     .getSingleResult();
             assertThat(blogOrSns.getUrl()).isEqualTo("https://localhost:8080/blog");
 
             // Interest
             List<MemberInterest> memberInterests = this.em.createQuery("""
-                        SELECT mi
-                        FROM MemberInterest mi
-                        WHERE mi.memberProfile.memberId = :memberId
-                        """, MemberInterest.class)
-                    .setParameter("memberId", member.getMemberId())
+                            SELECT mi
+                            FROM MemberInterest mi
+                            WHERE mi.memberProfile.memberId = :memberId
+                            """, MemberInterest.class)
+                    .setParameter("memberId", member.getId())
                     .getResultList();
             assertThat(memberInterests).extracting("name")
                     .containsExactlyInAnyOrder(

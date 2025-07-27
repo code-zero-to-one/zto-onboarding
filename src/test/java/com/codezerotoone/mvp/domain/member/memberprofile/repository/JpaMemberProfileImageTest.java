@@ -51,12 +51,12 @@ public class JpaMemberProfileImageTest {
         // Given
         Image image = Image.create("http://localhost:8080", new ResizedImageInfo("a.png", ImageSizeType.ORIGINAL));
         image = this.imageRepository.save(image);
-        generatedImageId = image.getImageId();
+        generatedImageId = image.getId();
 
         Member member = Member.createGeneralMember("sample@gmail.com", "GDP");
-        member.getMemberProfile().updateProfileImage(Image.getReference(generatedImageId));
+        member.getMemberProfile().updateProfileImage(Image.of(generatedImageId));
         member = this.memberRepository.save(member);
-        generatedMemberId = member.getMemberId();
+        generatedMemberId = member.getId();
 
         this.em.flush();
         this.em.clear();
@@ -69,7 +69,7 @@ public class JpaMemberProfileImageTest {
         log.info("memberProfile.image: {}", memberProfile.getProfileImage().getClass()); // 프록시 객체
 
         // Then
-        assertThat(memberProfile.getProfileImage().getImageId()).isEqualTo(generatedImageId);
+        assertThat(memberProfile.getProfileImage().getId()).isEqualTo(generatedImageId);
         assertThat(memberProfile.getProfileImage().getResizedImages()).size().isEqualTo(1);
     }
 }

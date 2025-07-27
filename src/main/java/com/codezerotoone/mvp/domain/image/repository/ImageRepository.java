@@ -13,8 +13,8 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("""
             SELECT i
             FROM Image i
-            WHERE i.deletedAt IS NULL
-                AND i.imageId = :imageId
+            WHERE i.deleteYn = false
+                AND i.id = :imageId
             """)
     Optional<Image> findById(@Param("imageId") Long imageId);
 }
