@@ -9,7 +9,7 @@ import com.codezerotoone.mvp.domain.member.memberprofile.dto.request.MemberInfoU
 import com.codezerotoone.mvp.domain.member.memberprofile.dto.request.MemberProfileUpdateRequestDto;
 import com.codezerotoone.mvp.domain.member.memberprofile.dto.response.*;
 import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberInfo;
-import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberInterest;
+import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberInterests;
 import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberProfile;
 import com.codezerotoone.mvp.domain.member.memberprofile.entity.dto.MemberInfoAtomicUpdateDto;
 import com.codezerotoone.mvp.domain.member.memberprofile.entity.dto.MemberProfileAtomicUpdateDto;
@@ -22,17 +22,12 @@ import com.codezerotoone.mvp.domain.member.memberprofile.repository.MemberProfil
 import com.codezerotoone.mvp.domain.member.memberprofile.repository.StudySubjectRepository;
 import com.codezerotoone.mvp.global.file.url.FileUrlResolver;
 import com.codezerotoone.mvp.global.util.FormatValidator;
-import com.codezerotoone.mvp.global.util.NullSafetyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -78,30 +73,30 @@ public class DefaultMemberProfileService implements MemberProfileService {
 
         memberInterestRepository.deleteByMemberId(memberId);
 
+        // 변경 사유: 서비스가 DTO와 Entity의 내부 구성에 의존하고 있으며, 너무 많은 역할을 하는 것으로 보입니다.
         memberInterestRepository.saveAll(
-                NullSafetyUtils.replaceEmptyIfNull(dto.getInterests()).stream()
-                        .map((v) -> MemberInterest.of(memberProfile, v))
-                        .toList()
+                MemberInterests.from(dto, memberProfile)
         );
 
         // 변경 사유: 값이 있는지를 검사하려는 것이므로, null 체크만으로는 부족하다고 생각됩니다.
-        if (FormatValidator.hasValue(dto.getGithubLink())) {
+        // 서비스가 DTO의 내부 구성에 대해 너무 많이 알고 있으며, 상태를 묻지 않고 getter로 꺼내어 대신 작업하는 분량이 너무 많습니다.
+        // 서비스의 역할을 최소화하고 DTO가 스스로의 상태를 관리하는 방식이 보다 캡슐화와 DDD 원칙에 부합하다고 생각됩니다.
+        if (dto.hasGithubLink()) {
             memberProfile.updatePrimarySocialMediaLink(dto.getGithubLink(), PrimarySocialMediaType.GITHUB);
         }
 
-        // 변경 사유: 값이 있는지를 검사하려는 것이므로, null 체크만으로는 부족하다고 생각됩니다.
-        if (FormatValidator.hasValue(dto.getBlogOrSnsLink())) {
+        if (dto.hasBlogOrSnsLink()) {
             memberProfile.updatePrimarySocialMediaLink(dto.getBlogOrSnsLink(), PrimarySocialMediaType.BLOG_OR_SNS);
+        }
+
+        // 추가 사유: 파라미터에 null을 전송하는 것보다는 팩토리 메서드를 오버로딩하는 게 낫다고 생각됩니다.
+        // 기존 로직은 바로 아래의 기본 확장자 조건문에서 확장자 존재 여부를 검사하고, generateUuidFileUri 메서드를 호출하기 직전에 한 번 더 검사하고 있어 비효율적입니다.
+        if (!dto.hasProfileImageExtension()) {
+            return MemberProfileUpdateResponseDto.from(memberProfile);
         }
 
         // 추가 사유: 기존 코드는 dto 인스턴스에서 getProfileImageExtension 메서드를 반복적으로 호출하고 있으며, 읽기에도 어렵습니다.
         ImageExtension extension = dto.getProfileImageExtension();
-
-        // 추가 사유: 파라미터에 null을 전송하는 것보다는 팩토리 메서드를 오버로딩하는 게 낫다고 생각됩니다.
-        // 기존 로직은 바로 아래의 기본 확장자 조건문에서 확장자 존재 여부를 검사하고, generateUuidFileUri 메서드를 호출하기 직전에 한 번 더 검사하고 있어 비효율적입니다.
-        if (!FormatValidator.hasValue(extension)) {
-            return MemberProfileUpdateResponseDto.from(memberProfile);
-        }
 
         // 변경 사유: 부정 조건식과 긍정 조건식이 혼재돼 있는 경우, 읽기에 불편합니다.
         if (extension.isDefaultImage()) {
@@ -113,7 +108,6 @@ public class DefaultMemberProfileService implements MemberProfileService {
 
         // 삭제 사유: 엔티티가 영속성 컨텍스트에서 관리되므로, 다시 조회할 필요가 없습니다.
 
-        // 변경 사유: MemberProfileService에서 ImageExtention의 유효성을 검사하는 것보다는, FileUrlResolver에서 검사하는 게 낫다고 생각됩니다.
         String profileImageUploadUrl = fileUrlResolver.generateFileUploadUrl(
                 // 변경 사유: 프로필 생성 엔드포인트가 MemberService와 중복됩니다. 분리하여 재사용하는 편이 낫다고 생각됩니다.
                 MemberEndpoint.generateProfileImagePath(memberId), extension
@@ -124,37 +118,37 @@ public class DefaultMemberProfileService implements MemberProfileService {
     }
 
     private void validateMemberUpdate(MemberProfileUpdateRequestDto dto, boolean ignoreNull) {
+        // 변경 사유: 부정 조건식과 긍정 조건식이 혼재돼 있는 경우, 읽기에 불편합니다. 중복된 조건식도 보입니다.
         // ignoreNull의 존재 때문에 null 체크를 서비스 레이어에서 수동으로 함
-        if (!ignoreNull && dto.getName() == null) {
-            throw new NullArgumentException("name", "\"name\" should not be null");
+        if (!ignoreNull) {
+            validate(dto.getName(), dto.getTel());
         }
 
-        if (!ignoreNull && dto.getTel() == null) {
-            throw new NullArgumentException("tel", "\"tel\" should not be null");
-        }
-
+        // 변경 사유: 기존의 중복 관심사 검사 로직이 길어 유효성 검사가 아닌 다른 일을 하는 것처럼 보이므로 분리했습니다.
         // 관심사 validation
-        List<String> interests = dto.getInterests();
-        if (ObjectUtils.isEmpty(interests)) {
-            return;
+        validate(dto.getInterests());
+    }
+
+    private void validate(String name, String tel) {
+        if (!FormatValidator.hasValue(name)) {
+            throw new NullArgumentException("name", "\"name\" should not be blank");
         }
 
-        List<String> duplicatedInterests = new ArrayList<>();
-        Set<String> visited = new HashSet<>();
-        for (String interest : interests) {
-            if (visited.contains(interest)) {
-                duplicatedInterests.add(interest);
-            }
-            visited.add(interest);
+        if (!FormatValidator.hasValue(tel)) {
+            throw new NullArgumentException("tel", "\"tel\" should not be blank");
         }
-        if (!duplicatedInterests.isEmpty()) {
-            throw new DuplicatedMemberInterestException(duplicatedInterests);
+    }
+
+    private void validate(List<String> interests) {
+        // 변경 사유: 기존의 null 체크 및 List를 순회하며 검사하는 방식은 다소 장황해 보입니다.
+        if (FormatValidator.hasValue(interests) && interests.size() > interests.stream().distinct().count()) {
+            throw new DuplicatedMemberInterestException(interests);
         }
     }
 
     // 삭제 사유: 기존에 memberId를 파라미터로 받아 호출 객체와의 결합도가 높으며, 재사용성이 낮습니다.
-    // extension과 path를 받도록 하고, private 메서드를 여러 개 만드는 것보다는 기존의 FileUrlResolver를 호출하는 편이 나은 것 같습니다.
-    // MemberService의 역할에서도 벗어 났다고 생각됩니다.
+    // 유사한 로직에 private 메서드를 반복적으로 만드는 것보다는 기존의 FileUrlResolver를 호출하는 편이 나은 것 같습니다.
+    // MemberProfileService의 역할에서도 벗어 났다고 생각됩니다.
 
     @Override
     public MemberProfileUpdateResponseDto updateProfile(Long memberId, MemberProfileUpdateRequestDto dto) throws MemberNotFoundException {

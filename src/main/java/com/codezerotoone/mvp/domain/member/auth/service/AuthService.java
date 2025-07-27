@@ -34,7 +34,7 @@ public class AuthService {
                     .newMember(false)
                     .accessToken(grantedTokenInfo.accessToken())
                     .refreshToken(grantedTokenInfo.refreshToken())
-                    .memberId(member.getMemberId())
+                    .memberId(member.getId())
                     .build();
         }
         OAuth2UserInfo userInfo = this.tokenSupport.retrieveUserInfo(grantedTokenInfo.accessToken());

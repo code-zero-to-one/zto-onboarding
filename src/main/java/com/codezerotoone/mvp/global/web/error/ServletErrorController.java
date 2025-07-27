@@ -36,7 +36,7 @@ public class ServletErrorController implements ErrorController {
         }
 
         return new ResponseEntity<>(
-                // 변경 사유: 기존의 switch도 나쁘지 않지만, 결합도가 높아 ServletErrorController가 ErrorResponse의 내부 구현에 의존하게 되므로 유지보수가 어렵다고 생각됩니다.
+                // 변경 사유: 기존의 switch 문도 나쁘지 않지만, 결합도가 높아 ServletErrorController가 CommonErrorCode의 멤버 구성에 의존하게 되므로 유지보수가 어렵다고 생각됩니다.
                 ErrorResponse.of(CommonErrorCode.get(status), detail),
                 HttpStatus.valueOf(status)
         );

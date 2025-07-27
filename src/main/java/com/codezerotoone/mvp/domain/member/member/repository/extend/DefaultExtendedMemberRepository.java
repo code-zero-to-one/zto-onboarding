@@ -16,7 +16,7 @@ public class DefaultExtendedMemberRepository implements ExtendedMemberRepository
 
     @Override
     public boolean existsNotDeletedMemberByOidcId(String oidcId) {
-        return countByOidcId(this.member.oidcId.eq(oidcId).and(this.member.deletedAt.isNull()))
+        return countByOidcId(this.member.oidcId.eq(oidcId).and(member.deleteYn.eq(false)))
                 .orElse(0L) > 0;
     }
 

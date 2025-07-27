@@ -32,9 +32,7 @@ public class MemberInterest extends BaseEntity {
         return new MemberInterest(memberProfile, name);
     }
 
-    public void updateName(String name) {
-        this.name = name;
-    }
+    // 삭제 사유: 사용되지 않아 삭제했으며, 명칭만 다를 뿐 setter의 역할을 하는 메서드이므로 바람직하지 않다고 보입니다.
 
     public void detachMemberProfile() {
         this.memberProfile = null;

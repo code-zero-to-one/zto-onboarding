@@ -48,9 +48,9 @@ class ImageRepositoryTest {
         List<ResizedImage> result = this.em.createQuery("""
                         SELECT ri
                         FROM ResizedImage ri
-                        WHERE ri.deletedAt IS NULL AND ri.image.imageId = :imageId
+                        WHERE ri.deleteYn = false AND ri.image.id = :imageId
                         """, ResizedImage.class)
-                .setParameter("imageId", image.getImageId())
+                .setParameter("imageId", image.getId())
                 .getResultList();
 
         // 사이즈 확인
@@ -65,6 +65,6 @@ class ImageRepositoryTest {
                 );
 
         // Image 엔티티가 제대로 들어갔는지 확인
-        assertThat(this.imageRepository.findById(image.getImageId())).isNotEmpty();
+        assertThat(this.imageRepository.findById(image.getId())).isNotEmpty();
     }
 }

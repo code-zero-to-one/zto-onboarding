@@ -38,6 +38,6 @@ public class FileService {
         // IOException이 발생할 경우 회원의 프로필 사진이 업데이트되지 않음
         MemberProfile memberProfile = this.memberProfileRepository.findNotDeletedMemberProfileById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
-        memberProfile.updateProfileImage(Image.getReference(generatedImageId));
+        memberProfile.updateProfileImage(Image.of(generatedImageId));
     }
 }

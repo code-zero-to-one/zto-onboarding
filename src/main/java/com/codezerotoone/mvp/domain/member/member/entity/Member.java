@@ -1,6 +1,6 @@
 package com.codezerotoone.mvp.domain.member.member.entity;
 
-import com.codezerotoone.mvp.domain.common.BaseEntity;
+import com.codezerotoone.mvp.domain.common.BaseGeneralEntity;
 import com.codezerotoone.mvp.domain.member.auth.entity.Role;
 import com.codezerotoone.mvp.domain.member.member.constant.MemberStatus;
 import com.codezerotoone.mvp.domain.member.memberprofile.entity.MemberProfile;
@@ -21,11 +21,8 @@ import java.time.LocalDateTime;
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Member extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+public class Member extends BaseGeneralEntity {
+    // 삭제 사유: 자신의 Primary Key는 테이블명을 생략하는 것이 일반적인 관례이며, 수정하기에는 이미 많이 개발되었지만 맛보기이므로 수정해 보았습니다.
 
     @Column(name = "login_id", unique = true)
     private String loginId;
@@ -53,13 +50,11 @@ public class Member extends BaseEntity {
      * values (?,?,?,?,?,?,?,?,?,?)]; constraint [null]
      */
 
-    private LocalDateTime deletedAt = null;
-
-    @OneToOne(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @OneToOne(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private MemberProfile memberProfile;
 
     private Member(Long memberId) {
-        this.memberId = memberId;
+        updateId(memberId);
     }
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -96,10 +91,15 @@ public class Member extends BaseEntity {
     }
 
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
+        deleteEntity();
     }
 
+    // 수정 사유: 삭제 날짜의 존재 여부로 삭제 데이터를 판별하는 것은 관리적으로도, 성능적으로도 좋지 않다고 생각됩니다.
     public boolean isDeleted() {
-        return this.deletedAt != null;
+        return isDeleted();
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return getDeletedAt();
     }
 }

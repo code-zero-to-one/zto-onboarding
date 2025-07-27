@@ -1,5 +1,6 @@
 package com.codezerotoone.mvp.global.util;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 public class FormatValidator {
@@ -9,5 +10,9 @@ public class FormatValidator {
 
     public static boolean hasValue(Object value) {
         return value != null && !value.toString().trim().isEmpty();
+    }
+
+    public static boolean hasValue(Collection<?> value) {
+        return value != null && !value.isEmpty();
     }
 }

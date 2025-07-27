@@ -32,7 +32,8 @@ public class LocalFileUrlResolver implements FileUrlResolver {
             throw new IllegalArgumentException("Invalid path: " + path);
         }
 
-        // UUID와 현재 시간을 기반으로 생성하는 것은 이미 충분히 유니크하다고 생각됩니다.
+        // UUID와 밀리 초 값을 기반으로 생성된 이미지 파일명은 이미 매우 충분히 유니크하다고 생각됩니다.
+        // 이미지 파일이 UUID의 중복을 염려할 정도로 중요도가 높은 데이터도 아니라고 봅니다.
         String uuidAsString = UUID.randomUUID().toString();
         Long epochTime = System.currentTimeMillis();
 

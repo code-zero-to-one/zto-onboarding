@@ -71,7 +71,7 @@ class JpaDefaultMemberProfileRepositoryTest {
 
         Long generatedMemberId;
         { // When
-            generatedMemberId = this.memberRepository.save(member).getMemberId();
+            generatedMemberId = this.memberRepository.save(member).getId();
         }
 
         { // Then
@@ -90,7 +90,7 @@ class JpaDefaultMemberProfileRepositoryTest {
             member = this.memberRepository.save(member);
             // 회원 프로필 삭제 (영속성 컨텍스트 안에 있는 엔티티에 영향을 미침)
             member.delete();
-            generatedMemberId = member.getMemberId();
+            generatedMemberId = member.getId();
         }
 
         Optional<MemberProfile> result;

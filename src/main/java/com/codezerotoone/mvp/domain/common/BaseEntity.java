@@ -29,11 +29,13 @@ public abstract class BaseEntity {
     protected BaseEntity() {
     }
 
-    public LocalDateTime getCreatedAt() {
+    // 변경 사유: 자신의 날짜는 여기저기서 꺼내 볼 수 있게 하는 것보다 스스로가 관리하는 것이 객체지향의 원칙에도, DDD의 지향점에도 부합한다고 생각됩니다.
+    protected LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    // 변경 사유: 자신의 날짜는 여기저기서 꺼내 볼 수 있게 하는 것보다 스스로가 관리하는 것이 객체지향의 원칙에도, DDD의 지향점에도 부합한다고 생각됩니다.
+    protected LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 

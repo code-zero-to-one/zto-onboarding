@@ -36,7 +36,7 @@ public class DefaultOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
                 Member member = memberOp.get();
 
                 return new DefaultOAuth2AuthenticatedPrincipal(
-                        String.valueOf(member.getMemberId()),
+                        String.valueOf(member.getId()),
                         Map.of("sub", oidcId == null ? "" : oidcId),
                         List.of(new SimpleGrantedAuthority(member.getRole().getRoleId()))
                 );

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import com.codezerotoone.mvp.global.util.FormatValidator;
 
 import java.util.List;
 
@@ -49,4 +50,16 @@ public class MemberProfileUpdateRequestDto {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @JsonDeserialize(using = ImageExtensionDeserializer.class)
     private ImageExtension profileImageExtension;
+
+    public boolean hasGithubLink() {
+        return FormatValidator.hasValue(githubLink);
+    }
+
+    public boolean hasBlogOrSnsLink() {
+        return FormatValidator.hasValue(blogOrSnsLink);
+    }
+
+    public boolean hasProfileImageExtension() {
+        return FormatValidator.hasValue(profileImageExtension);
+    }
 }

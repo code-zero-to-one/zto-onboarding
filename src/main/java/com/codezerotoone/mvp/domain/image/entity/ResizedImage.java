@@ -8,15 +8,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com.codezerotoone.mvp.domain.common.EntityConstant.BOOLEAN_DEFAULT_FALSE;
+
 @Entity
 @Table(name = "resized_image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ResizedImage {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resizedImageId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
@@ -28,7 +29,11 @@ public class ResizedImage {
     @Column(name = "image_size_type", columnDefinition = "VARCHAR(10)")
     private ImageSizeType imageSizeType;
 
-    public LocalDateTime deletedAt = null;
+    @Column(nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
+    private boolean deleteYn;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public ResizedImage(Image image, String resizedImageUrl, ImageSizeType imageSizeType) {
         this.image = image;
@@ -37,15 +42,12 @@ public class ResizedImage {
     }
 
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
+        deleteYn = true;
+        deletedAt = LocalDateTime.now();
     }
 
     public boolean isDeleted() {
-        return this.deletedAt != null;
-    }
-
-    public boolean isNotDeleted() {
-        return !isDeleted();
+        return deleteYn;
     }
 
     public String getFullResizedImageUrl() {

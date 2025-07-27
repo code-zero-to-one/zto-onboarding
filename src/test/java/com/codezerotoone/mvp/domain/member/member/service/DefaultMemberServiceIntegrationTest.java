@@ -132,7 +132,7 @@ class DefaultMemberServiceIntegrationTest {
         assertThat(generatedMemberId).isNotNull();
 
         Member member = result.get(0);
-        assertThat(member.getMemberId()).isEqualTo(generatedMemberId);
+        assertThat(member.getId()).isEqualTo(generatedMemberId);
 
         // Clear
         em.remove(em.find(MemberProfile.class, generatedMemberId));

@@ -50,7 +50,7 @@ public class TestController {
 
 ```json
 {
-  "member_id": 1,
+  "id": 1,
   "created_at": "2025-05-04 20:24:28.000000",
   "updated_at": "2025-05-04 20:24:32.000000",
   "auto_matching": "F",
